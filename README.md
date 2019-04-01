@@ -5,7 +5,7 @@ ESP8266 software for a moon lamp controlled with a HTTP-server based on ESP8266 
 
 This is an illumination for a moon lamp based on an ESP8266 and WS2812b LED-light strip. A HTTP-Webserver is implemented to switch on and off the light and controll the LED setting (colour, brightness). Additional the last state is safed in the EEPROM to turn on the last state after an power off / loss.
 The code is implemented in the Arduino IDE and is directly related to a reprint of a moon lamp.
-For the housing etc. see  [https://www.thingiverse.com/thing:3238162](https://www.thingiverse.com/thing:3238162)
+For the housing etc. see  [https://www.thingiverse.com/thing:3531429](https://www.thingiverse.com/thing:3531429)
 
 ### Commands
 - http://IP-ADRESS/on   -   Switching the LED-lights on
