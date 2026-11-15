@@ -10,12 +10,12 @@ The housing is a reprint of this design: [thingiverse.com/thing:3531429](https:/
 |---|---|---|
 | Board | Wemos D1 mini (ESP8266) | ESP32-C3 Super Mini |
 | Connector | Micro-USB | **USB-C** |
-| Firmware | Arduino sketch in [`MondLED-Server-NeoPixel-OTA_GitHub`](./MondLED-Server-NeoPixel-OTA_GitHub) | ESPHome configuration in [`esphome`](./esphome) |
-| Control | HTTP commands | Home Assistant (native API), also usable from the ESPHome web server |
-| State after power loss | Stored in EEPROM | Restored by ESPHome (`restore_mode`) |
-| Updates | OTA via Arduino IDE | OTA via ESPHome |
+| Firmware | Arduino sketch ([`MondLED-Server-NeoPixel-OTA_GitHub`](./MondLED-Server-NeoPixel-OTA_GitHub)) | ESPHome ([`esphome`](./esphome)) **or** the same Arduino sketch |
+| Control | HTTP commands | Home Assistant (native API) with ESPHome; HTTP commands with the Arduino sketch |
+| State after power loss | Stored in EEPROM | Restored by ESPHome (`restore_mode`) or stored in EEPROM (Arduino sketch) |
+| Updates | OTA via Arduino IDE | OTA via ESPHome or Arduino IDE |
 
-Both variants use the same LED strip and the same wiring principle.
+The Arduino sketch runs unchanged on both boards; the right pins are selected automatically. Both variants use the same LED strip and the same wiring principle.
 
 ## Hardware
 
@@ -50,9 +50,9 @@ Place the capacitor directly across +5 V and GND at the strip's input.
 ### Notes for the ESP32-C3 Super Mini
 - The board is powered and flashed via **USB-C**.
 - The red LED is the power indicator, wired directly to the supply. It cannot be switched off in software; cover it or remove it if it disturbs inside the lamp.
-- The blue LED on GPIO8 is user-controllable and stays unused in this project.
+- The blue LED on GPIO8 is user-controllable (active low). The Arduino sketch blinks it three times once the WiFi connection is established; the ESPHome configuration leaves it unused.
 - Avoid GPIO8 and GPIO9 for the LED strip (strapping pins).
-- Some Super Mini boards have a weak antenna and fail to connect to WiFi ("Auth Expired" in the log). The provided configuration therefore sets `output_power: 8.5dB`, which fixes this in most cases.
+- Some Super Mini boards have a weak antenna and fail to connect to WiFi ("Auth Expired" in the log). Both the ESPHome configuration (`output_power: 8.5dB`) and the Arduino sketch (`WiFi.setTxPower(WIFI_POWER_8_5dBm)`) therefore lower the transmit power, which fixes this in most cases.
 - The data signal is 3.3 V. For short cables and a small strip this works with WS2812B; with long cables or problems, add a level shifter (e.g. 74AHCT125).
 
 ## Modern setup: ESP32-C3 + ESPHome + Home Assistant
@@ -69,14 +69,25 @@ Place the capacitor directly across +5 V and GND at the strip's input.
 
 The lamp then appears as a light entity (`light.mondled_mond_led`) with on/off, colour and brightness. It can be used in dashboards, scenes, automations (e.g. sunset, bedtime) and voice assistants.
 
-## Classic setup: ESP8266 + Arduino + HTTP
+## Arduino sketch: ESP32-C3 or ESP8266 + HTTP
 
-An HTTP server on the ESP8266 switches the light and sets the colour. The last state (on/off, colour, brightness) is stored in the EEPROM and restored after a power loss.
+An HTTP server on the microcontroller switches the light and sets the colour. The last state (on/off, colour, brightness) is stored in the EEPROM and restored after a power loss. The same sketch supports the **ESP32-C3 Super Mini** and the **ESP8266**.
 
 ### Compiling
-1. Install the ESP8266 board package and the *Adafruit NeoPixel* library in the Arduino IDE.
-2. Copy `MondLED-Server-NeoPixel-OTA_GitHub/secrets.h.example` to `secrets.h` and enter your WiFi name, WiFi password and an OTA password. This file is excluded from git.
-3. Select your board (e.g. NodeMCU / Wemos D1 mini) and upload.
+1. Install the Arduino IDE and the *Adafruit NeoPixel* library (Library Manager).
+2. Install the board package for your board (Boards Manager):
+   - ESP32-C3 Super Mini: **esp32** by Espressif. Select the board **ESP32C3 Dev Module** and set **USB CDC On Boot: Enabled** (otherwise there is no serial output over USB-C).
+   - ESP8266: **esp8266** by ESP8266 Community. Select your board (e.g. *LOLIN(WEMOS) D1 R2 & mini* or *NodeMCU*).
+3. Copy `MondLED-Server-NeoPixel-OTA_GitHub/secrets.h.example` to `secrets.h` and enter your WiFi name, WiFi password and an OTA password. This file is excluded from git.
+4. Adjust `NUM_LEDS` (and, if you wired it differently, `LED_DATA_PIN`) at the top of the `.ino` file.
+5. Upload. The first upload goes over USB; afterwards the board also shows up as a network port for OTA updates.
+
+Default pins:
+
+| Board | LED data | Onboard LED |
+|---|---|---|
+| ESP32-C3 Super Mini | GPIO3 | GPIO8 |
+| ESP8266 (Wemos D1 mini) | D7 (GPIO13) | GPIO2 |
 
 ### HTTP commands
 - `http://IP-ADDRESS/on` – switch the light on

@@ -3,10 +3,13 @@
 
 
 // Constructor
+// The strip is constructed directly in the initializer list. (Assigning a temporary
+// Adafruit_NeoPixel object afterwards would leave a dangling pixel buffer behind,
+// which tends to crash on the ESP32.)
 LEDBandCommLibrary::LEDBandCommClass::LEDBandCommClass(int _pin, int _num_led)
+  : strip(_num_led, _pin, NEO_GRB + NEO_KHZ800)
 {
-  strip = Adafruit_NeoPixel(_num_led, _pin, NEO_GRB + NEO_KHZ800);
-//  strip = Adafruit_NeoPixel(_num_led, _pin, NEO_GRBW + NEO_KHZ800);
+//  for RGBW strips use: NEO_GRBW + NEO_KHZ800
   blue = 255; green = 255; red = 255;			// inital white;
   brightness = 255;
   isOn = false;

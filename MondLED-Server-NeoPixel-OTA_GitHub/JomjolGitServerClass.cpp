@@ -12,7 +12,7 @@ void GitServerLibrary::ServerClass::setup()
 
 void GitServerLibrary::ServerClass::handleRoot() 
 {
-  send(200, "text/plain", "hello from esp8266!");
+  send(200, "text/plain", "hello from MondLED!");
 }
 
 
