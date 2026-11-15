@@ -1,17 +1,11 @@
 #ifndef _Server_Library
 #define _Server_Library
 
-#if defined(ESP32)
-  #include <WebServer.h>
-  typedef WebServer BaseWebServer;
-#else
-  #include <ESP8266WebServer.h>
-  typedef ESP8266WebServer BaseWebServer;
-#endif
+#include <ESP8266WebServer.h>
 
 namespace GitServerLibrary
 {
-  class ServerClass: public BaseWebServer
+  class ServerClass: public ESP8266WebServer
   {
     private:
       virtual void doCommand();
@@ -21,7 +15,7 @@ namespace GitServerLibrary
       virtual void handleRoot();
 
     public:
-      ServerClass(uint16_t port = 80) : BaseWebServer(port){};
+      ServerClass(uint16_t port = 80) : ESP8266WebServer(port){};
 
       virtual void setup();
       virtual void loop();

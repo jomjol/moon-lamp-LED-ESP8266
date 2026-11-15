@@ -1,7 +1,7 @@
 #ifndef _LEDBand_Comm_Library
 #define _LEDBand_Comm_Library
 
-#include <Arduino.h>
+#include <arduino.h>
 #include <Adafruit_NeoPixel.h>
 
 

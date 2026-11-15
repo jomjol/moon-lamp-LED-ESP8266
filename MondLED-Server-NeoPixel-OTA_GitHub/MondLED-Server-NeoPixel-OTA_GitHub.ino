@@ -1,42 +1,22 @@
-// This sketch runs on two boards:
-//   - ESP32-C3 Super Mini (USB-C)       -> select board "ESP32C3 Dev Module"
-//   - ESP8266 (Wemos D1 mini / NodeMCU) -> select your ESP8266 board
-#if defined(ESP32)
-  #include <WiFi.h>
-  #include <ESPmDNS.h>
-#else
-  #include <ESP8266WiFi.h>
-  #include <ESP8266mDNS.h>
-#endif
+#include <ESP8266WiFi.h>
+#include <ESP8266mDNS.h>
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
 
 
-#include <Arduino.h>
+#include "arduino.h"
 #include "LED-Server-Class.h"
 
 // WLAN credentials are NOT stored in the repository.
 // Copy "secrets.h.example" to "secrets.h" and fill in your own values.
 #include "secrets.h"
 
-// Number of LEDs in the strip
-#define NUM_LEDS 15
-
-// Pin assignment
-#if defined(ESP32)
-  #define LED_DATA_PIN  3         // ESP32-C3 Super Mini: GPIO3 -> 470 Ohm -> DIN of the strip
-  #define INT_LED       8         // ESP32-C3 Super Mini: blue user LED on GPIO8 (active low)
-#else
-  #define LED_DATA_PIN  D7        // ESP8266 (Wemos D1 mini): D7 = GPIO13
-  #define INT_LED       2         // ESP8266 (Wemos D1 mini): blue LED on GPIO2 (active low)
-#endif
-
 const char* ssid = SECRET_WIFI_SSID;
 const char* password = SECRET_WIFI_PASSWORD;
 const char* otaPassword = SECRET_OTA_PASSWORD;
 const char* host = "Mond1";
 
-LEDBandServerLibrary::LEDBandServer ledBand(LED_DATA_PIN, NUM_LEDS);
+LEDBandServerLibrary::LEDBandServer ledBand(D7, 15);
 
 void setup() {
   Serial.begin(115200);
@@ -55,18 +35,13 @@ void loop() {
 
 void WifiReConnect()
 {
-  pinMode(INT_LED, OUTPUT);         // Initialize the onboard LED pin as an output
-  digitalWrite(INT_LED, HIGH);      // LED is active low -> HIGH = LED off.
+  #define INT_LED     2         // Led in NodeMCU at pin GPIO16 (D0).
+  pinMode(INT_LED, OUTPUT);         // Initialize the LED_BUILTIN pin as an output
+  digitalWrite(INT_LED, HIGH);      // turn the LED on.
 
   if (WiFi.status() != WL_CONNECTED)
   {
     WiFi.mode(WIFI_STA);
-#if defined(ESP32)
-    // Many ESP32-C3 Super Mini boards have a poorly matched antenna and fail to
-    // connect with the default transmit power ("Auth Expired"). A lower power fixes this.
-    // If the connection still fails, try WIFI_POWER_11dBm or WIFI_POWER_5dBm.
-    WiFi.setTxPower(WIFI_POWER_8_5dBm);
-#endif
     WiFi.begin(ssid, password);
     Serial.println("");
   
