@@ -43,9 +43,15 @@ Place the capacitor directly across +5 V and GND at the strip's input.
 | ESP8266 (Wemos D1 mini) | D7 (GPIO13) |
 | ESP32-C3 Super Mini | GPIO3 (configurable via `led_pin` in the YAML) |
 
-<img src="./images/LED_lamp_sketch.png" width="800">
+**Modern: ESP32-C3 Super Mini (USB-C)**
 
-*The sketch shows the classic setup with the Wemos D1 mini. For the ESP32-C3 Super Mini, only the data pin changes.*
+<img src="./images/LED_lamp_sketch_ESP32-C3.png" width="800">
+
+*Pin order can differ between manufacturers – always follow the labels printed on your board. An editable [SVG version](./images/LED_lamp_sketch_ESP32-C3.svg) is included.*
+
+**Classic: Wemos D1 mini (ESP8266)**
+
+<img src="./images/LED_lamp_sketch.png" width="800">
 
 ### Notes for the ESP32-C3 Super Mini
 - The board is powered and flashed via **USB-C**.
