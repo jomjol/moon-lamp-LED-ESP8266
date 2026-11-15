@@ -7,8 +7,13 @@
 #include "arduino.h"
 #include "LED-Server-Class.h"
 
-const char* ssid = "SoJoFritzBox";
-const char* password = "z1504jlp77";
+// WLAN credentials are NOT stored in the repository.
+// Copy "secrets.h.example" to "secrets.h" and fill in your own values.
+#include "secrets.h"
+
+const char* ssid = SECRET_WIFI_SSID;
+const char* password = SECRET_WIFI_PASSWORD;
+const char* otaPassword = SECRET_OTA_PASSWORD;
 const char* host = "Mond1";
 
 LEDBandServerLibrary::LEDBandServer ledBand(D7, 15);
@@ -65,7 +70,7 @@ void WifiReConnect()
 void OTA_setup()
 {
   ArduinoOTA.setHostname(host);
-  ArduinoOTA.setPassword(password);
+  ArduinoOTA.setPassword(otaPassword);
   ArduinoOTA.onError([](ota_error_t error) { ESP.restart(); });
   ArduinoOTA.begin();
 }
